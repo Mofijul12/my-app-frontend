@@ -4,127 +4,244 @@ import './App.css';
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 function App() {
-  const [items, setItems] = useState([]);
-  const [formData, setFormData] = useState({ name: '', description: '' });
+  const [entries, setEntries] = useState([]);
+  const [formData, setFormData] = useState({
+    date: '',
+    rise: '',
+    sleep: '',
+    salat: {
+      fajr: false,
+      dhuhr: false,
+      asr: false,
+      maghrib: false,
+      isha: false
+    },
+    quran: '',
+    expense: '',
+    badwork: ''
+  });
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Fetch all items
+  // Fetch all daily entries
   useEffect(() => {
-    fetchItems();
+    fetchEntries();
   }, []);
 
-  const fetchItems = async () => {
+  const fetchEntries = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/api/items`);
+      const response = await fetch(`${API_URL}/api/daily`);
       const data = await response.json();
-      setItems(data);
+      setEntries(data);
       setError('');
     } catch (err) {
-      setError('Failed to fetch items');
+      setError('Failed to fetch daily entries');
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Create item
+  // Handle input change
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  // Handle salat checkbox change
+  const handleSalatChange = (e) => {
+    const { name, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      salat: {
+        ...prev.salat,
+        [name]: checked
+      }
+    }));
+  };
+
+  // Create new daily entry
   const handleCreate = async (e) => {
     e.preventDefault();
-    if (!formData.name.trim()) return;
-
     try {
-      const response = await fetch(`${API_URL}/api/items`, {
+      const response = await fetch(`${API_URL}/api/daily`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
-      const newItem = await response.json();
-      setItems([newItem, ...items]);
-      setFormData({ name: '', description: '' });
-      setError('');
+
+      const newEntry = await response.json();
+
+      if (response.ok) {
+        setEntries([newEntry, ...entries]);
+        resetForm();
+        setError('');
+      } else {
+        setError(newEntry.message || 'Failed to create entry');
+      }
     } catch (err) {
-      setError('Failed to create item');
+      setError('Failed to create entry');
       console.error(err);
     }
   };
 
-  // Update item
+  // Update existing daily entry
   const handleUpdate = async (e) => {
     e.preventDefault();
-    if (!formData.name.trim()) return;
-
     try {
-      const response = await fetch(`${API_URL}/api/items/${editingId}`, {
+      const response = await fetch(`${API_URL}/api/daily/${editingId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
-      const updatedItem = await response.json();
-      setItems(items.map(item => item._id === editingId ? updatedItem : item));
-      setFormData({ name: '', description: '' });
-      setEditingId(null);
-      setError('');
+      const updatedEntry = await response.json();
+
+      if (response.ok) {
+        setEntries(entries.map(entry => entry._id === editingId ? updatedEntry : entry));
+        resetForm();
+        setEditingId(null);
+        setError('');
+      } else {
+        setError(updatedEntry.message || 'Failed to update entry');
+      }
     } catch (err) {
-      setError('Failed to update item');
+      setError('Failed to update entry');
       console.error(err);
     }
   };
 
-  // Delete item
+  // Delete daily entry
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this item?')) return;
+    if (!window.confirm('Are you sure you want to delete this entry?')) return;
 
     try {
-      await fetch(`${API_URL}/api/items/${id}`, {
+      const response = await fetch(`${API_URL}/api/daily/${id}`, {
         method: 'DELETE'
       });
-      setItems(items.filter(item => item._id !== id));
-      setError('');
+      if (response.ok) {
+        setEntries(entries.filter(entry => entry._id !== id));
+        setError('');
+      } else {
+        setError('Failed to delete entry');
+      }
     } catch (err) {
-      setError('Failed to delete item');
+      setError('Failed to delete entry');
       console.error(err);
     }
   };
 
   // Start editing
-  const startEdit = (item) => {
-    setEditingId(item._id);
-    setFormData({ name: item.name, description: item.description });
+  const startEdit = (entry) => {
+    setEditingId(entry._id);
+    setFormData({
+      date: entry.date,
+      rise: entry.rise,
+      sleep: entry.sleep,
+      salat: entry.salat,
+      quran: entry.quran,
+      expense: entry.expense,
+      badwork: entry.badwork
+    });
   };
 
   // Cancel editing
   const cancelEdit = () => {
     setEditingId(null);
-    setFormData({ name: '', description: '' });
+    resetForm();
+  };
+
+  // Reset form
+  const resetForm = () => {
+    setFormData({
+      date: '',
+      rise: '',
+      sleep: '',
+      salat: {
+        fajr: false,
+        dhuhr: false,
+        asr: false,
+        maghrib: false,
+        isha: false
+      },
+      quran: '',
+      expense: '',
+      badwork: ''
+    });
   };
 
   return (
     <div className="App">
       <div className="container">
-        <h1>CRUD Application</h1>
-        
+        <h1>🕌 Daily Tracker</h1>
+
         {error && <div className="error">{error}</div>}
 
         <form onSubmit={editingId ? handleUpdate : handleCreate} className="form">
           <input
-            type="text"
-            placeholder="Name"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            type="date"
+            name="date"
+            value={formData.date}
+            onChange={handleChange}
             required
           />
-          <textarea
-            placeholder="Description"
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            rows="3"
+          <input
+            type="time"
+            name="rise"
+            placeholder="Rise time"
+            value={formData.rise}
+            onChange={handleChange}
+            required
           />
+          <input
+            type="time"
+            name="sleep"
+            placeholder="Sleep time"
+            value={formData.sleep}
+            onChange={handleChange}
+            required
+          />
+
+          <div className="salat-section">
+            <label>Salat:</label>
+            {['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'].map(prayer => (
+              <label key={prayer}>
+                <input
+                  type="checkbox"
+                  name={prayer}
+                  checked={formData.salat[prayer]}
+                  onChange={handleSalatChange}
+                />
+                {prayer.toUpperCase()}
+              </label>
+            ))}
+          </div>
+
+          <input
+            type="number"
+            name="quran"
+            placeholder="Quran (pages)"
+            value={formData.quran}
+            onChange={handleChange}
+          />
+          <input
+            type="number"
+            name="expense"
+            placeholder="Expense (₹)"
+            value={formData.expense}
+            onChange={handleChange}
+          />
+          <textarea
+            name="badwork"
+            placeholder="Bad habits / distractions"
+            value={formData.badwork}
+            onChange={handleChange}
+          />
+
           <div className="button-group">
             <button type="submit" className="btn-primary">
-              {editingId ? 'Update' : 'Create'}
+              {editingId ? 'Update Entry' : 'Create Entry'}
             </button>
             {editingId && (
               <button type="button" onClick={cancelEdit} className="btn-secondary">
@@ -137,20 +254,26 @@ function App() {
         {loading ? (
           <p>Loading...</p>
         ) : (
-          <div className="items-list">
-            {items.length === 0 ? (
-              <p className="no-items">No items yet. Create your first one!</p>
+          <div className="entries-list">
+            {entries.length === 0 ? (
+              <p className="no-items">No entries yet. Start tracking your day!</p>
             ) : (
-              items.map(item => (
-                <div key={item._id} className="item-card">
-                  <h3>{item.name}</h3>
-                  <p>{item.description}</p>
-                  <small>Created: {new Date(item.createdAt).toLocaleString()}</small>
+              entries.map(entry => (
+                <div key={entry._id} className="item-card">
+                  <h3>{entry.date}</h3>
+                  <p>🌅 Rise: {entry.rise} | 🌙 Sleep: {entry.sleep}</p>
+                  <p>
+                    🕌 Salat: {Object.keys(entry.salat).filter(s => entry.salat[s]).join(', ') || 'None'}
+                  </p>
+                  <p>📖 Quran: {entry.quran} pages</p>
+                  <p>💰 Expense: ₹{entry.expense}</p>
+                  <p>⚠️ Badwork: {entry.badwork || 'None'}</p>
+                  <small>Created: {new Date(entry.createdAt).toLocaleString()}</small>
                   <div className="item-actions">
-                    <button onClick={() => startEdit(item)} className="btn-edit">
+                    <button onClick={() => startEdit(entry)} className="btn-edit">
                       Edit
                     </button>
-                    <button onClick={() => handleDelete(item._id)} className="btn-delete">
+                    <button onClick={() => handleDelete(entry._id)} className="btn-delete">
                       Delete
                     </button>
                   </div>
