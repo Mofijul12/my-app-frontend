@@ -12,163 +12,138 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
-  padding: 20px;
+  padding: 10px;
 }
 
 .App {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .container {
   background: white;
   border-radius: 12px;
+  padding: 20px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-  padding: 40px;
-  max-width: 800px;
-  width: 100%;
-  margin: 20px;
 }
 
 h1 {
-  color: #333;
-  margin-bottom: 30px;
-  font-size: 2.5rem;
   text-align: center;
+  color: #333;
+  margin-bottom: 25px;
+  font-size: 1.8rem;
 }
 
 .error {
-  background-color: #fee;
+  background: #fee;
   color: #c33;
   padding: 12px;
   border-radius: 6px;
   margin-bottom: 20px;
-  border-left: 4px solid #c33;
+  text-align: center;
+  font-size: 0.9rem;
 }
 
 .form {
-  background: #f8f9fa;
-  padding: 25px;
-  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   margin-bottom: 30px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
 }
 
-.form input,
+.form input[type="date"],
+.form input[type="time"],
+.form input[type="number"],
 .form textarea {
-  width: 100%;
-  padding: 12px 15px;
-  margin-bottom: 15px;
-  border: 2px solid #e0e0e0;
+  padding: 12px;
+  border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 1rem;
-  font-family: inherit;
-  transition: border-color 0.3s;
-}
-
-.form input:focus,
-.form textarea:focus {
-  outline: none;
-  border-color: #667eea;
+  width: 100%;
 }
 
 .form textarea {
-  resize: vertical;
   min-height: 80px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.salat-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.salat-section > label:first-child {
+  width: 100%;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.salat-section label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 6px 10px;
+  background: #f8f9fa;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.salat-section input[type="checkbox"] {
+  width: auto;
+  cursor: pointer;
 }
 
 .button-group {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 button {
-  padding: 12px 24px;
+  padding: 12px 20px;
   border: none;
   border-radius: 6px;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.3s;
-  font-weight: 600;
+  transition: all 0.2s;
+  flex: 1;
+  min-width: 120px;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #667eea;
   color: white;
-  flex: 1;
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  background: #5568d3;
 }
 
 .btn-secondary {
   background: #6c757d;
   color: white;
-  flex: 1;
 }
 
 .btn-secondary:hover {
   background: #5a6268;
 }
 
-.items-list {
-  display: grid;
-  gap: 20px;
-}
-
-.no-items {
-  text-align: center;
-  color: #666;
-  padding: 40px;
-  font-size: 1.1rem;
-}
-
-.item-card {
-  background: white;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 20px;
-  transition: all 0.3s;
-}
-
-.item-card:hover {
-  border-color: #667eea;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
-}
-
-.item-card h3 {
-  color: #333;
-  margin-bottom: 10px;
-  font-size: 1.5rem;
-}
-
-.item-card p {
-  color: #666;
-  margin-bottom: 10px;
-  line-height: 1.5;
-}
-
-.item-card small {
-  color: #999;
-  font-size: 0.85rem;
-  display: block;
-  margin-bottom: 15px;
-}
-
-.item-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 15px;
-}
-
 .btn-edit {
   background: #28a745;
   color: white;
-  flex: 1;
 }
 
 .btn-edit:hover {
@@ -178,41 +153,162 @@ button {
 .btn-delete {
   background: #dc3545;
   color: white;
-  flex: 1;
 }
 
 .btn-delete:hover {
   background: #c82333;
 }
 
-/* Loading state */
-.container > p {
-  text-align: center;
-  color: #666;
-  padding: 20px;
-  font-size: 1.1rem;
+.entries-list {
+  display: grid;
+  gap: 15px;
 }
 
-/* Responsive design */
+.item-card {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.item-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.item-card h3 {
+  color: #667eea;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+}
+
+.item-card p {
+  margin: 8px 0;
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.item-card small {
+  color: #999;
+  font-size: 0.85rem;
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 12px;
+}
+
+.item-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.item-actions button {
+  flex: 1;
+  min-width: 100px;
+  padding: 10px 15px;
+  font-size: 0.9rem;
+}
+
+.no-items {
+  text-align: center;
+  color: #999;
+  padding: 40px 20px;
+  font-size: 1rem;
+}
+
+/* Mobile optimizations */
 @media (max-width: 768px) {
+  body {
+    padding: 5px;
+  }
+
   .container {
-    padding: 20px;
-    margin: 10px;
+    padding: 15px;
+    border-radius: 8px;
   }
 
   h1 {
-    font-size: 2rem;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
   }
 
   .form {
-    padding: 20px;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .form input[type="date"],
+  .form input[type="time"],
+  .form input[type="number"],
+  .form textarea {
+    padding: 10px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  .salat-section label {
+    font-size: 0.85rem;
+    padding: 5px 8px;
   }
 
   .button-group {
     flex-direction: column;
   }
 
+  button {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .item-card {
+    padding: 12px;
+  }
+
+  .item-card h3 {
+    font-size: 1.1rem;
+  }
+
+  .item-card p {
+    font-size: 0.9rem;
+  }
+
   .item-actions {
     flex-direction: column;
+  }
+
+  .item-actions button {
+    width: 100%;
+    min-width: unset;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.3rem;
+  }
+
+  .salat-section {
+    gap: 6px;
+  }
+
+  .salat-section label {
+    font-size: 0.8rem;
+    padding: 4px 6px;
+    flex: 1 1 calc(50% - 6px);
+  }
+
+  .item-card p {
+    font-size: 0.85rem;
+    word-wrap: break-word;
+  }
+}
+
+/* Landscape mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .container {
+    max-height: 90vh;
+    overflow-y: auto;
   }
 }
