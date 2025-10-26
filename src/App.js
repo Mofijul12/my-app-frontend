@@ -1,7 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './App.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+// Utility function to convert 24-hour time string (HH:MM) to 12-hour format (H:MM AM/PM)
+const formatTime12Hour = (time24h) => {
+  if (!time24h || typeof time24h !== 'string') return '';
+  
+  const [hours, minutes] = time24h.split(':').map(Number);
+  
+  if (isNaN(hours) || isNaN(minutes)) return time24h;
+
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const hour12 = hours % 12 || 12; // Convert 0 to 12
+  
+  const minutesPadded = String(minutes).padStart(2, '0');
+  
+  return `${hour12}:${minutesPadded} ${ampm}`;
+};
+
 
 function App() {
   const [entries, setEntries] = useState([]);
@@ -23,6 +40,13 @@ function App() {
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // 1. New State for Monthly Filtering
+  // Initialize with current month and year (YYYY-MM format)
+  const today = new Date();
+  const initialMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+  const [selectedMonth, setSelectedMonth] = useState(initialMonth);
+
 
   // Fetch all daily entries
   useEffect(() => {
@@ -75,9 +99,15 @@ function App() {
       const newEntry = await response.json();
 
       if (response.ok) {
+        // Update entries state and ensure the new entry's month matches the filter
         setEntries([newEntry, ...entries]);
         resetForm();
         setError('');
+        // Automatically set the filter to the month of the new entry if it's different
+        const newEntryMonth = newEntry.date.substring(0, 7); // Assuming date is YYYY-MM-DD
+        if (newEntryMonth !== selectedMonth) {
+            setSelectedMonth(newEntryMonth);
+        }
       } else {
         setError(newEntry.message || 'Failed to create entry');
       }
@@ -171,14 +201,55 @@ function App() {
     });
   };
 
+
+  // 2. Filter Entries by Selected Month
+  const filteredEntries = useMemo(() => {
+    if (!selectedMonth) return entries;
+    
+    return entries.filter(entry => {
+      // Assuming entry.date is in YYYY-MM-DD format
+      return entry.date && entry.date.startsWith(selectedMonth);
+    });
+  }, [entries, selectedMonth]);
+
+
+  // 3. Calculate Total Expenses for Filtered Entries
+  const totalMonthlyExpenses = useMemo(() => {
+    return filteredEntries.reduce((total, entry) => {
+      // Ensure the expense is a number before adding
+      const expenseValue = parseFloat(entry.expense);
+      return total + (isNaN(expenseValue) ? 0 : expenseValue);
+    }, 0).toFixed(2); // Keep two decimal places for currency
+  }, [filteredEntries]);
+
+
   return (
     <div className="App">
       <div className="container">
-        <h1>🕌 Daily Tracker</h1>
+        
+        <div className="header-content">
+          <h1>🕌 Daily Tracker</h1>
+          
+          <div className="expense-summary-group">
+            {/* Monthly Filter Selector */}
+            <input 
+              type="month"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="month-filter-input"
+            />
+
+            {/* Total Monthly Expenses Display */}
+            <div className="total-expenses">
+              💰 Monthly Expense: **{totalMonthlyExpenses} Taka**
+            </div>
+          </div>
+        </div>
 
         {error && <div className="error">{error}</div>}
 
         <form onSubmit={editingId ? handleUpdate : handleCreate} className="form">
+          {/* Form inputs use the browser's default time format, which is fine */}
           <input
             type="date"
             name="date"
@@ -228,7 +299,7 @@ function App() {
           <input
             type="number"
             name="expense"
-            placeholder="Expense (₹)"
+            placeholder="Expense"
             value={formData.expense}
             onChange={handleChange}
           />
@@ -254,19 +325,23 @@ function App() {
         {loading ? (
           <p>Loading...</p>
         ) : (
+          // Use filteredEntries here
           <div className="entries-list">
-            {entries.length === 0 ? (
-              <p className="no-items">No entries yet. Start tracking your day!</p>
+            {filteredEntries.length === 0 ? (
+              <p className="no-items">No entries found for {selectedMonth}.</p>
             ) : (
-              entries.map(entry => (
+              filteredEntries.map(entry => (
                 <div key={entry._id} className="item-card">
                   <h3>{entry.date}</h3>
-                  <p>🌅 Rise: {entry.rise} | 🌙 Sleep: {entry.sleep}</p>
+                  <p>
+                    🌅 Rise: **{formatTime12Hour(entry.rise)}** | 
+                    🌙 Sleep: **{formatTime12Hour(entry.sleep)}**
+                  </p>
                   <p>
                     🕌 Salat: {Object.keys(entry.salat).filter(s => entry.salat[s]).join(', ') || 'None'}
                   </p>
                   <p>📖 Quran: {entry.quran} pages</p>
-                  <p>💰 Expense: ₹{entry.expense}</p>
+                  <p>💰 Expense: {entry.expense} Taka</p>
                   <p>⚠️ Badwork: {entry.badwork || 'None'}</p>
                   <small>Created: {new Date(entry.createdAt).toLocaleString()}</small>
                   <div className="item-actions">

@@ -1,148 +1,260 @@
+/* GLOBAL RESET AND BASE */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+:root {
+  /* Define a consistent color palette */
+  --primary-color: #667eea;
+  /* Your main blue/purple */
+  --primary-dark: #5568d3;
+  --secondary-color: #f1f4f8;
+  /* Light background for forms/cards */
+  --text-dark: #333;
+  --text-medium: #555;
+  --text-light: #999;
+  --success-color: #28a745;
+  --delete-color: #dc3545;
+  --expense-color: #38a169;
+  /* Green for expenses */
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* Softened gradient background */
+  background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
   min-height: 100vh;
-  padding: 10px;
+  padding: 20px 10px;
+  /* Increased padding on desktop */
 }
 
 .App {
   width: 100%;
-  max-width: 1200px;
+  max-width: 900px;
+  /* Slightly reduced max-width for focus */
   margin: 0 auto;
 }
 
+/* CONTAINER AND SHADOWS */
 .container {
   background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  /* Slightly rounder corners */
+  padding: 30px;
+  /* Increased padding */
+  /* Modern, subtle box shadow */
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05), 0 5px 15px rgba(0, 0, 0, 0.03);
+  position: relative;
+  /* Needed for header positioning */
 }
 
+/* HEADER AND SUMMARY */
 h1 {
   text-align: center;
-  color: #333;
+  color: var(--text-dark);
   margin-bottom: 25px;
-  font-size: 1.8rem;
+  font-size: 2rem;
+  /* Larger title */
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
-.error {
-  background: #fee;
-  color: #c33;
-  padding: 12px;
-  border-radius: 6px;
-  margin-bottom: 20px;
-  text-align: center;
-  font-size: 0.9rem;
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  /* Use padding instead of margin to align with container edges */
 }
 
+.expense-summary-group {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  /* Allows wrap on small screens */
+  justify-content: flex-end;
+  /* Keeps items to the right */
+}
+
+.month-filter-input {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  /* Matched to form elements */
+  font-size: 0.95em;
+  cursor: pointer;
+  background: white;
+  transition: border-color 0.2s;
+}
+
+.month-filter-input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+.total-expenses {
+  font-size: 1.15em;
+  font-weight: 700;
+  color: var(--expense-color);
+  padding: 10px 18px;
+  border: 2px solid var(--expense-color);
+  border-radius: 8px;
+  /* Matched border radius */
+  background: #f2fff5;
+  /* Very light green background */
+  white-space: nowrap;
+}
+
+/* FORM STYLING */
 .form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 30px;
-  padding: 15px;
-  background: #f8f9fa;
-  border-radius: 8px;
+  gap: 15px;
+  /* Increased gap */
+  margin-bottom: 40px;
+  /* Increased bottom margin */
+  padding: 25px;
+  /* Increased padding */
+  background: var(--secondary-color);
+  /* Light gray background */
+  border-radius: 10px;
+  /* Refined border radius */
+  border: 1px solid #e0e0e0;
 }
 
 .form input[type="date"],
 .form input[type="time"],
 .form input[type="number"],
 .form textarea {
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  padding: 14px;
+  /* More padding for a softer look */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  /* Uniformly rounded */
   font-size: 1rem;
   width: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form input:focus,
+.form textarea:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  /* Subtle glow on focus */
+  outline: none;
 }
 
 .form textarea {
-  min-height: 80px;
-  resize: vertical;
-  font-family: inherit;
+  min-height: 100px;
+  /* Slightly taller */
 }
 
+/* SALAT SECTION */
 .salat-section {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  padding: 12px;
+  gap: 10px;
+  /* Increased gap */
+  padding: 15px;
+  /* Increased padding */
   background: white;
-  border-radius: 6px;
-  border: 1px solid #ddd;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
 }
 
-.salat-section > label:first-child {
+.salat-section>label:first-child {
   width: 100%;
   font-weight: 600;
   margin-bottom: 5px;
-  color: #555;
+  color: var(--text-medium);
+  font-size: 1rem;
 }
 
 .salat-section label {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  /* Increased gap */
   font-size: 0.9rem;
   cursor: pointer;
-  padding: 6px 10px;
-  background: #f8f9fa;
-  border-radius: 4px;
+  padding: 8px 12px;
+  /* Increased padding for click area */
+  background: #f8f8f8;
+  border: 1px solid #e9e9e9;
+  border-radius: 6px;
   white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.salat-section label:hover {
+  background: #eef1f5;
 }
 
 .salat-section input[type="checkbox"] {
-  width: auto;
-  cursor: pointer;
+  /* Style for checked state for better visibility */
+  accent-color: var(--primary-color);
 }
 
+
+/* BUTTONS */
 .button-group {
   display: flex;
-  gap: 10px;
+  gap: 15px;
+  /* Increased gap */
   flex-wrap: wrap;
 }
 
 button {
-  padding: 12px 20px;
+  padding: 14px 22px;
+  /* More padding */
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
+  /* Consistent rounded edges */
   font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s ease;
   flex: 1;
-  min-width: 120px;
+  min-width: 140px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* Added subtle shadow to buttons */
+}
+
+button:active {
+  transform: translateY(1px);
+  /* Pressed effect */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary {
-  background: #667eea;
+  background: var(--primary-color);
   color: white;
 }
 
 .btn-primary:hover {
-  background: #5568d3;
+  background: var(--primary-dark);
+  box-shadow: 0 6px 10px rgba(102, 126, 234, 0.3);
 }
 
 .btn-secondary {
-  background: #6c757d;
+  background: #95a5a6;
+  /* Neutral secondary color */
   color: white;
 }
 
 .btn-secondary:hover {
-  background: #5a6268;
+  background: #7f8c8d;
 }
 
 .btn-edit {
-  background: #28a745;
+  background: var(--success-color);
   color: white;
 }
 
@@ -151,7 +263,7 @@ button {
 }
 
 .btn-delete {
-  background: #dc3545;
+  background: var(--delete-color);
   color: white;
 }
 
@@ -159,84 +271,132 @@ button {
   background: #c82333;
 }
 
+/* ENTRY LIST */
 .entries-list {
   display: grid;
-  gap: 15px;
+  gap: 20px;
+  /* Increased gap */
 }
 
 .item-card {
-  background: #f8f9fa;
-  padding: 15px;
-  border-radius: 8px;
-  border-left: 4px solid #667eea;
-  transition: transform 0.2s, box-shadow 0.2s;
+  background: white;
+  /* Changed to white background */
+  padding: 20px;
+  /* Increased padding */
+  border-radius: 10px;
+  /* Refined border radius */
+  border: 1px solid #eee;
+  border-left: 6px solid var(--primary-color);
+  /* Thicker accent bar */
+  transition: transform 0.25s, box-shadow 0.25s;
 }
 
 .item-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-3px);
+  /* More noticeable lift */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  /* Stronger shadow on hover */
 }
 
 .item-card h3 {
-  color: #667eea;
-  margin-bottom: 10px;
-  font-size: 1.2rem;
+  color: var(--primary-color);
+  margin-bottom: 8px;
+  font-size: 1.3rem;
+  font-weight: 600;
 }
 
 .item-card p {
-  margin: 8px 0;
-  color: #555;
+  margin: 6px 0;
+  color: var(--text-medium);
   font-size: 0.95rem;
-  line-height: 1.5;
+  line-height: 1.6;
+}
+
+.item-card p:last-of-type {
+  margin-bottom: 12px;
 }
 
 .item-card small {
-  color: #999;
+  color: var(--text-light);
   font-size: 0.85rem;
   display: block;
   margin-top: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 15px;
 }
 
 .item-actions {
   display: flex;
   gap: 10px;
-  margin-top: 12px;
+  margin-top: 15px;
   flex-wrap: wrap;
 }
 
 .item-actions button {
   flex: 1;
-  min-width: 100px;
-  padding: 10px 15px;
-  font-size: 0.9rem;
+  min-width: 90px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  box-shadow: none;
+  /* Removed shadow from small buttons */
 }
 
 .no-items {
   text-align: center;
-  color: #999;
-  padding: 40px 20px;
-  font-size: 1rem;
+  color: var(--text-light);
+  padding: 50px 20px;
+  font-size: 1.1rem;
+  font-style: italic;
+  background: var(--secondary-color);
+  border-radius: 8px;
 }
 
-/* Mobile optimizations */
+.error {
+  background: #ffebeb;
+  color: #a00;
+  border: 1px solid #f0a0a0;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+
+/* MOBILE OPTIMIZATIONS */
 @media (max-width: 768px) {
   body {
-    padding: 5px;
+    padding: 10px;
   }
 
   .container {
-    padding: 15px;
-    border-radius: 8px;
+    padding: 20px;
+    border-radius: 10px;
   }
 
   h1 {
     font-size: 1.5rem;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
+  }
+
+  .header-content {
+    flex-direction: column;
+    /* Stack header items vertically */
+    align-items: flex-start;
+  }
+
+  .expense-summary-group {
+    width: 100%;
+    justify-content: space-between;
+    /* Spread filter and total box */
+    margin-top: 10px;
+  }
+
+  .total-expenses,
+  .month-filter-input {
+    flex: 1;
+    /* Allow them to share space equally */
+    text-align: center;
   }
 
   .form {
-    padding: 12px;
+    padding: 15px;
     gap: 10px;
   }
 
@@ -244,17 +404,18 @@ button {
   .form input[type="time"],
   .form input[type="number"],
   .form textarea {
-    padding: 10px;
-    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 12px;
+    font-size: 16px;
   }
 
   .salat-section label {
     font-size: 0.85rem;
-    padding: 5px 8px;
+    padding: 6px 10px;
   }
 
   .button-group {
     flex-direction: column;
+    gap: 10px;
   }
 
   button {
@@ -262,25 +423,9 @@ button {
     min-width: unset;
   }
 
-  .item-card {
-    padding: 12px;
-  }
-
-  .item-card h3 {
-    font-size: 1.1rem;
-  }
-
-  .item-card p {
-    font-size: 0.9rem;
-  }
-
   .item-actions {
     flex-direction: column;
-  }
-
-  .item-actions button {
-    width: 100%;
-    min-width: unset;
+    gap: 8px;
   }
 }
 
@@ -289,26 +434,27 @@ button {
     font-size: 1.3rem;
   }
 
+  .expense-summary-group {
+    flex-direction: column;
+    align-items: stretch;
+    /* Stretch items to full width */
+    gap: 10px;
+  }
+
+  .total-expenses,
+  .month-filter-input {
+    width: 100%;
+    min-width: unset;
+  }
+
   .salat-section {
-    gap: 6px;
+    gap: 8px;
   }
 
   .salat-section label {
     font-size: 0.8rem;
-    padding: 4px 6px;
-    flex: 1 1 calc(50% - 6px);
-  }
-
-  .item-card p {
-    font-size: 0.85rem;
-    word-wrap: break-word;
-  }
-}
-
-/* Landscape mobile */
-@media (max-width: 768px) and (orientation: landscape) {
-  .container {
-    max-height: 90vh;
-    overflow-y: auto;
+    padding: 5px 8px;
+    /* Optimizing for up to 5 prayers on one line if possible, otherwise wrap */
+    flex: 1 1 calc(50% - 4px);
   }
 }
