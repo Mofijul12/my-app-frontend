@@ -553,7 +553,7 @@ function App() {
     e.preventDefault();
     const isDuplicate = entries.some(entry => entry.date === formData.date);
     if (isDuplicate) {
-      setModalError(`An entry for ${formData.date} already exists.`);
+      setModalError(`You already have an entry for this day`);
       return;
     }
 
