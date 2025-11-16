@@ -72,8 +72,14 @@ const Dashboard = ({ entries, selectedMonth }) => {
     // Possible salat count should be 5 prayers * total days in month
     let possibleSalatCount = daysInMonth * 5;
     
+    // Count bad work days
+    let badWorkDays = 0;
+    
     monthEntries.forEach(entry => {
       totalSalatCount += Object.values(entry.salat).filter(Boolean).length;
+      if (entry.badwork === true) {
+        badWorkDays++;
+      }
     });
     
     const avgSleep = monthEntries.length > 0 
@@ -89,7 +95,8 @@ const Dashboard = ({ entries, selectedMonth }) => {
       avgSleep: avgSleep.toFixed(1),
       salatPercentage,
       totalSalatCount,
-      possibleSalatCount
+      possibleSalatCount,
+      badWorkDays
     };
   }, [monthEntries, selectedMonth]);
 
@@ -121,6 +128,12 @@ const Dashboard = ({ entries, selectedMonth }) => {
           <p style={{ fontSize: '0.9rem', opacity: 0.9, marginBottom: '8px' }}>Avg Sleep</p>
           <p style={{ fontSize: '2.5rem', fontWeight: 'bold' }}>{stats.avgSleep}h</p>
           <p style={{ fontSize: '2rem', opacity: 0.8, marginTop: '8px' }}>😴</p>
+        </div>
+
+        <div style={{ background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', padding: '20px', borderRadius: '12px', color: 'white', boxShadow: 'var(--shadow-md)' }}>
+          <p style={{ fontSize: '0.9rem', opacity: 0.9, marginBottom: '8px' }}>Bad Work Days</p>
+          <p style={{ fontSize: '2.5rem', fontWeight: 'bold' }}>{stats.badWorkDays}</p>
+          <p style={{ fontSize: '2rem', opacity: 0.8, marginTop: '8px' }}>⚠️</p>
         </div>
       </div>
 
@@ -215,7 +228,7 @@ const EntriesPage = ({
       salat: { fajr: false, dhuhr: false, asr: false, maghrib: false, isha: false },
       quran: '',
       expense: '',
-      badwork: ''
+      badwork: false
     });
   };
 
@@ -278,12 +291,19 @@ const EntriesPage = ({
           value={formData.expense}
           onChange={handleChange}
         />
-        <textarea
-          name="badwork"
-          placeholder="Bad habits / distractions"
-          value={formData.badwork}
-          onChange={handleChange}
-        />
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', border: '1px solid var(--border-light)', borderRadius: '6px' }}>
+          <input
+            type="checkbox"
+            name="badwork"
+            checked={formData.badwork}
+            onChange={(e) => setFormData(prev => ({ ...prev, badwork: e.target.checked }))}
+            style={{ width: '18px', height: '18px', accentColor: 'var(--delete-color)', cursor: 'pointer' }}
+          />
+          <label style={{ fontSize: '1rem', fontWeight: '500', cursor: 'pointer', userSelect: 'none' }} onClick={() => setFormData(prev => ({ ...prev, badwork: !prev.badwork }))}>
+            ⚠️ Had bad habits / distractions today
+          </label>
+        </div>
 
         <div className="button-group">
           <button 
@@ -334,9 +354,11 @@ const EntriesPage = ({
               <p className="card-detail expense-line">
                 <span role="img" aria-label="expense">💰</span> Expense: <strong>{entry.expense} Taka</strong>
               </p>
-              <p className="card-detail badwork-line">
-                <span role="img" aria-label="badwork">⚠️</span> Badwork: <span>{entry.badwork || 'None'}</span>
-              </p>
+              {entry.badwork && (
+                <p className="card-detail badwork-line">
+                  <span role="img" aria-label="badwork">⚠️</span> <span style={{ fontWeight: '600' }}>Had bad habits today</span>
+                </p>
+              )}
               <small className="card-timestamp">Created: {new Date(entry.createdAt).toLocaleString()}</small>
               <div className="item-actions">
                 <button onClick={() => startEdit(entry)} className="btn-edit">
@@ -486,7 +508,7 @@ function App() {
     salat: { fajr: false, dhuhr: false, asr: false, maghrib: false, isha: false },
     quran: '',
     expense: '',
-    badwork: ''
+    badwork: false
   });
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -552,7 +574,7 @@ function App() {
           salat: { fajr: false, dhuhr: false, asr: false, maghrib: false, isha: false },
           quran: '',
           expense: '',
-          badwork: ''
+          badwork: false
         });
         setModalError('');
       } else {
@@ -583,7 +605,7 @@ function App() {
           salat: { fajr: false, dhuhr: false, asr: false, maghrib: false, isha: false },
           quran: '',
           expense: '',
-          badwork: ''
+          badwork: false
         });
         setEditingId(null);
         setModalError('');
